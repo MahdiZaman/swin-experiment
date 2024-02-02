@@ -18,6 +18,9 @@ from .cached_image_folder import CachedImageFolder
 from .imagenet22k_dataset import IN22KDATASET
 from .samplers import SubsetRandomSampler
 
+from datasets import load_dataset
+from data.HFDataset import HFDataset
+
 try:
     from torchvision.transforms import InterpolationMode
 
@@ -97,6 +100,8 @@ def build_loader(config):
 
 def build_dataset(is_train, config):
     transform = build_transform(is_train, config)
+    print(f"config.DATA.DATASET: ", config.DATA.DATASET)
+    # config.DATA.DATASET = 'tiny-imagenet'
     if config.DATA.DATASET == 'imagenet':
         prefix = 'train' if is_train else 'val'
         if config.DATA.ZIP_MODE:
@@ -116,6 +121,14 @@ def build_dataset(is_train, config):
             ann_file = prefix + "_map_val.txt"
         dataset = IN22KDATASET(config.DATA.DATA_PATH, ann_file, transform)
         nb_classes = 21841
+    elif config.DATA.DATASET == 'tiny-imagenet':
+        hf_dataset = load_dataset('Maysee/tiny-imagenet')
+        nb_classes = 200
+        if is_train:
+            hf_dataset = hf_dataset['train']
+        else:
+            hf_dataset = hf_dataset['valid']
+        dataset = HFDataset(hf_dataset, transform=transform)
     else:
         raise NotImplementedError("We only support ImageNet Now.")
 

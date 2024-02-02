@@ -304,7 +304,15 @@ if __name__ == '__main__':
 
     if config.AMP_OPT_LEVEL:
         print("[warning] Apex amp has been deprecated, please use pytorch amp instead!")
-
+    
+    '''
+    Run the following from bash before running the script 
+    if you are using single GPU
+    export RANK=0
+    export WORLD_SIZE=1
+    export MASTER_ADDR=localhost
+    export MASTER_PORT=12355
+    '''
     if 'RANK' in os.environ and 'WORLD_SIZE' in os.environ:
         rank = int(os.environ["RANK"])
         world_size = int(os.environ['WORLD_SIZE'])
@@ -312,6 +320,7 @@ if __name__ == '__main__':
     else:
         rank = -1
         world_size = -1
+    print(f"rank {rank} / world_size {world_size}")
     torch.cuda.set_device(config.LOCAL_RANK)
     torch.distributed.init_process_group(backend='nccl', init_method='env://', world_size=world_size, rank=rank)
     torch.distributed.barrier()

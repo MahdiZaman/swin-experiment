@@ -612,3 +612,28 @@ class SwinTransformer(nn.Module):
         flops += self.num_features * self.patches_resolution[0] * self.patches_resolution[1] // (2 ** self.num_layers)
         flops += self.num_features * self.num_classes
         return flops
+
+
+if __name__ == '__main__':
+    model = SwinTransformer(
+        img_size=224, patch_size=4, in_chans=3, num_classes=1000,
+        embed_dim=96, depths=[2, 2, 6, 2], num_heads=[3, 6, 12, 24],
+        window_size=7, mlp_ratio=4., qkv_bias=True, qk_scale=None,
+        drop_rate=0., attn_drop_rate=0., drop_path_rate=0.1,
+        norm_layer=nn.LayerNorm, ape=False, patch_norm=True,
+        use_checkpoint=False, fused_window_process=False)
+    # print(model)
+    
+    # B, H, W, C = 4, 768, 7, 7
+    # img = torch.randn(B, H, W, C)
+    # win_module = WindowAttention(dim=768, window_size=(7, 7), num_heads=12, qkv_bias=True, qk_scale=None, attn_drop=0., proj_drop=0.)
+    # y = win_module(img)
+
+    img = torch.randn(1, 3, 224, 224)
+    y = model(img)
+    print(y.shape)
+    print(model.flops())
+    print(sum(p.numel() for p in model.parameters()))
+    print(model.no_weight_decay())
+    print(model.no_weight_decay_keywords())
+    print(model.no_weight_decay_keywords())

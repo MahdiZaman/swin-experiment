@@ -1,5 +1,5 @@
 DATA:
-  DATASET: imagenet22K
+  DATASET: tiny-imagenet #imagenet22K
 MODEL:
   TYPE: swin
   NAME: swin_base_patch4_window7_224_22k
